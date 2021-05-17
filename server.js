@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const passport = require('passport');
 const config = require('./config');
 
+const fs = require('fs'); //added
+
 const indexRouter = require('./routes/indexRouter');
 const usersRouter = require('./routes/users');
 const guitarRouter = require('./routes/guitarRouter');
@@ -26,7 +28,20 @@ connect.then(() => console.log('Connected correctly to server'),
 const hostname = 'localhost';
 const port = 3000;
 
-const app = express();
+//const app = express(); secure server additions
+const https = require('https')
+const app = express()
+
+app.get('/', (req, res) => {
+  res.send('Hello HTTPS!')
+});
+
+https.createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
+  }, app).listen(3000, () => {
+    console.log('Listening...')
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -47,7 +62,6 @@ app.use('/users', usersRouter);
 app.use(express.static(__dirname + '/public'));
 
 app.use('/guitars', guitarRouter);
-
 
 
 app.use((req, res) => {
