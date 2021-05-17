@@ -1,11 +1,13 @@
 const express = require('express');
 const Guitar = require('../models/guitar');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 const guitarRouter = express.Router();
 
 guitarRouter.route('/')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+.get(cors.cors, (req, res, next) => {
     Guitar.find()
     .then(guitars => {
         console.log(guitars);
@@ -15,7 +17,7 @@ guitarRouter.route('/')
     })
     .catch(err => next(err));
 })
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.create(req.body)
     .then(guitar => {
         console.log('Guitar Created ', guitar);
@@ -25,11 +27,11 @@ guitarRouter.route('/')
     })
     .catch(err => next(err));
 })
-.put(authenticate.verifyUser, (req, res) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /guitars');
 })
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.deleteMany()
     .then(response => {
         res.statusCode = 200;
@@ -40,7 +42,8 @@ guitarRouter.route('/')
 });
 
 guitarRouter.route('/:guitarId')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+.get(cors.cors, (req, res, next) => {
     Guitar.findById(req.params.guitarId)
     .then(guitar => {
         if (guitar) {
@@ -55,11 +58,11 @@ guitarRouter.route('/:guitarId')
     })
     .catch(err => next(err));
 })
-.post(authenticate.verifyUser, (req, res) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /guitars/${req.params.guitarId}`);
 })
-.put(authenticate.verifyUser, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.findByIdAndUpdate(req.params.guitarId, {$set: req.body}, { new: true })
     .then(guitar => {
         if (guitar) {
@@ -75,7 +78,7 @@ guitarRouter.route('/:guitarId')
     })  
     .catch(error => next(error));
 }) 
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.findByIdAndDelete(req.params.guitarId)
     .then(response => {
         res.statusCode = 200;
@@ -86,7 +89,8 @@ guitarRouter.route('/:guitarId')
 });
 
 guitarRouter.route('/:guitarId/history')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+.get(cors.cors, (req, res, next) => {
     Guitar.findById(req.params.guitarId)
     //.populate('history')
     .then(guitar => {
@@ -102,7 +106,7 @@ guitarRouter.route('/:guitarId/history')
     })
     .catch(err => next(err));
 })
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.findById(req.params.guitarId)
     .then(guitar => {
         if (guitar) {
@@ -122,11 +126,11 @@ guitarRouter.route('/:guitarId/history')
     })
     .catch(err => next(err));
 })
-.put(authenticate.verifyUser, (req, res) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(`PUT operation not supported on /guitars/history`);
 })
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.findById(req.params.guitarId)
     .then(guitar => {
         if (guitar) {
@@ -150,7 +154,8 @@ guitarRouter.route('/:guitarId/history')
 });
 
 guitarRouter.route('/:guitarId/history/:historyId')
-.get((req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+.get(cors.cors, (req, res, next) => {
     Guitar.findById(req.params.guitarId)
     .then(guitar => {
         if (guitar && guitar.history.id(req.params.historyId)) {
@@ -165,11 +170,11 @@ guitarRouter.route('/:guitarId/history/:historyId')
     })
     .catch(err => next(err));
 })
-.post(authenticate.verifyUser, (req, res) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /guitars/${req.params.guitarId}`);
 })
-.put(authenticate.verifyUser, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.findById(req.params.guitarId)
     .then(guitar => {
         if (guitar) {
@@ -203,7 +208,7 @@ guitarRouter.route('/:guitarId/history/:historyId')
     })  
     .catch(err => next(err)); 
 }) 
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Guitar.findById(req.params.guitarId)
     .then(guitar => {
         if (guitar && guitar.history.id(req.params.historyId)) {
