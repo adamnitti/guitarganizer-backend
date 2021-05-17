@@ -10,6 +10,7 @@ const fs = require('fs'); //added
 const indexRouter = require('./routes/indexRouter');
 const usersRouter = require('./routes/users');
 const guitarRouter = require('./routes/guitarRouter');
+const uploadRouter = require('./routes/uploadRouter');
 
 const mongoose = require('mongoose');
 
@@ -63,6 +64,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.use('/guitars', guitarRouter);
 
+app.use('/imageUpload', uploadRouter);
 
 app.use((req, res) => {
     res.statusCode = 200;
